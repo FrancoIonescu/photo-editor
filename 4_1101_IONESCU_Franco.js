@@ -70,7 +70,7 @@ document.getElementById('select-button').addEventListener('click', () => {
         canvas.addEventListener('mousemove', updateSelection);
         canvas.addEventListener('mouseup', finishSelection);
     } else {
-        alert("Nicio imagine nu este incarcata pentru a face selectia.");
+        alert("Nicio imagine nu este încărcată pentru a face selecția.");
     }
 });
 
@@ -139,7 +139,7 @@ document.getElementById('crop-button').addEventListener('click', cropSelection);
 
 function cropSelection() {
     if (!isAreaSelected) {
-        alert("Nu este selectata nicio zona pentru decupare.");
+        alert("Nu este selectată nicio zonă pentru decupare.");
         return;
     }
 
@@ -149,7 +149,7 @@ function cropSelection() {
     startY += 2;
 
     if (cropWidth <= 0 || cropHeight <= 0) {
-        alert("Dimensiunile selectiei sunt invalide.");
+        alert("Dimensiunile selecției sunt invalide.");
         return;
     }
 
@@ -165,6 +165,56 @@ function cropSelection() {
 
     isAreaSelected = false;
     startX = startY = endX = endY = 0;
+}
+
+document.getElementById('buton-alb-negru').addEventListener('click', applyBlackAndWhite);
+
+function applyBlackAndWhite() {
+    if (!imagePresent) {
+        alert('Nu exista o imagine incarcata.');
+        return;
+    }
+
+    let x, y, width, height;
+
+    if (isAreaSelected) {
+        x = startX;
+        y = startY;
+        width = endX - startX;
+        height = endY - startY;
+
+        if (width <= 0 || height <= 0) {
+            alert("Dimensiunile selecției sunt invalide.");
+            return;
+        }
+    } else {
+        x = 0;
+        y = 0;
+        width = canvas.width;
+        height = canvas.height;
+    }
+
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    const imageData = context.getImageData(x, y, width, height); 
+    const data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];  
+        const g = data[i + 1];   
+        const b = data[i + 2];  
+
+        const gray = 0.3 * r + 0.59 * g + 0.11 * b;
+
+        data[i] = data[i + 1] = data[i + 2] = gray; 
+    }
+
+    context.putImageData(imageData, x, y);
+    image.src = canvas.toDataURL();
+
+    if (isAreaSelected) {
+        isAreaSelected = false;
+        startX = startY = endX = endY = 0;
+    }
 }
 
 document.getElementById('reset-button').addEventListener('click', resetImage);

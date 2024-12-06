@@ -1,58 +1,69 @@
 body {
-    margin: 0;
-    background-color: #D3D3D3;
-  }
-  
-  .navbar {
-    background-color: #34495E;
-    color: white;
-    height: 100px;
-    display: flex;
-    position: fixed;
-    z-index: 1;
-    top: 0;
-    left: 0;
-    right: 0;
-  }
-  
-  .save-menu {
-    margin-left: 20px;
-    margin-right: 50px;
-    text-align: center;
-  }
-  
-  .zoom-menu {
-    margin-right: 50px;
-    text-align: center;
-  }
-  
-  .select-menu {
-    margin-right: 50px;
-    text-align: center;
-  }
+  margin: 0;
+  background-color: #D3D3D3;
+}
 
-  .crop-menu {
-    margin-right: 50px;
-    text-align: center;
-  }
-  
-  #edit-box {
-    border: 2px dashed #34495E;
-    width: 600px;
-    height: 500px;
-    color: #34495E; 
-    margin-left: 20px; 
-    margin-top: 120px;
-    text-align: center;
-  }
-  
-  .ascundere-text {
-    display: none;
-  }
-  
-  #canvas {
-    position: absolute;
-    left: 0;
-    margin-left: 10px;
-    transform-origin: top left;
-  }
+.navbar {
+  background-color: #34495E;
+  color: white;
+  height: 100px;
+  display: flex;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.save-menu {
+  margin-left: 20px;
+  margin-right: 50px;
+  text-align: center;
+}
+
+.zoom-menu {
+  margin-left: 20px;
+  margin-right: 50px;
+  text-align: center;
+}
+
+.select-menu {
+  margin-right: 50px;
+  text-align: center;
+}
+
+.crop-menu {
+  margin-right: 50px;
+  text-align: center;
+}
+
+.filters-menu {
+  margin-right: 50px;
+  text-align: center;
+}
+
+.text-menu {
+  margin-right: 50px;
+  text-align: center;
+}
+
+.edit-box {
+  border: 2px dashed #34495E;
+  width: 600px;
+  height: 500px;
+  color: #34495E; 
+  margin-left: 20px; 
+  margin-top: 120px;
+  text-align: center;
+}
+
+.ascundere-text {
+  display: none;
+}
+
+#canvas {
+  position: absolute;
+  left: 0;
+  margin-left: 10px;
+  transform-origin: top left;
+}
