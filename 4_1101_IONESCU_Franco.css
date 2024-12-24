@@ -37,12 +37,17 @@ body {
   text-align: center;
 }
 
+.delete-menu {
+  margin-right: 50px;
+  text-align: center;
+}
+
 .filters-menu {
   margin-right: 50px;
   text-align: center;
 }
 
-.text-menu {
+.meniu-text {
   margin-right: 50px;
   text-align: center;
 }

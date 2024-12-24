@@ -27,17 +27,25 @@
             <p>Crop</p>
             <button id="crop-button">Crop</button>
         </div>
+        <div class="delete-menu">
+            <p>Delete</p>
+            <button id="buton-delete">Delete</button>
+        </div>
         <div class="filters-menu">
             <p>Filtre</p>
             <button id="buton-alb-negru">Alb Negru</button>
-            <button>Blur</button>
-            <button>Inversare Culori</button>
-            <button>Sepia</button>
-            <button>Pixelat</button>
+            <button id="buton-threshold">Threshold</button>
+            <button id="buton-inversare-culori">Inversare Culori</button>
+            <button id="buton-sepia">Sepia</button>
+            <button id="buton-pixelat">Pixelat</button>
         </div>
-        <div class="text-menu">
-            <p>Text</p>
-            <button id="text-button">Adauga text</button>
+        <div class="meniu-text">
+            <p>Adaugare Text</p>
+            <button id="buton-text">Adauga text</button>
+            <label for="text-size">Dimensiune:</label>
+            <input id="dimensiune-text" type="number" min="10" max="100" value="16">
+            <label for="text-color">Culoare:</label>
+            <input id="culoare-text" type="color" value="#000000">
         </div>
     </div>
     <div class="edit-box" id="edit-box">     
