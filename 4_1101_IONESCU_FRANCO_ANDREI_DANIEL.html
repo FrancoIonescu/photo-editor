@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="4_1101_IONESCU_Franco.css">
-    <script src="4_1101_IONESCU_Franco.js" defer></script>
+    <link rel="stylesheet" href="4_1101_IONESCU_FRANCO_ANDREI_DANIEL.css">
+    <script src="4_1101_IONESCU_FRANCO_ANDREI_DANIEL.js" defer></script>
     <title>Editor Fotografii</title>
 </head>
 <body>
@@ -18,6 +18,12 @@
             <p>Zoom</p>
             <button id="zoom-in">Zoom In</button><br>
             <button id="zoom-out">Zoom Out</button>
+        </div>
+        <div class="resize-menu">
+            <p>Resize</p>
+            <input type="number" id="latime-noua" placeholder="Pixeli latime"><br>
+            <input type="number" id="inaltime-noua" placeholder="Pixeli inaltime"><br>
+            <button id="resize-button">Redimensionează</button>
         </div>
         <div class="select-menu">
             <p>Select</p>
@@ -42,17 +48,16 @@
         <div class="meniu-text">
             <p>Adaugare Text</p>
             <button id="buton-text">Adauga text</button>
-            <label for="text-size">Dimensiune:</label>
+            <label for="dimensiune-text">Dimensiune:</label>
             <input id="dimensiune-text" type="number" min="10" max="100" value="16">
-            <label for="text-color">Culoare:</label>
+            <label for="culoare-text">Culoare:</label>
             <input id="culoare-text" type="color" value="#000000">
         </div>
     </div>
-    <div class="edit-box" id="edit-box">     
-        <p id="drag-drop-text">Drag & drop an image here</p>
+    <div id="edit-box">     
+        <p id="drag-drop-text">Incarca aici o imagine!</p>
         <canvas id="canvas"></canvas>
-        <canvas id="histogram" width="400" height="300"></canvas>
+        <canvas id="histograma" width="400" height="300"></canvas>
     </div>    
 </body>
-
 </html>

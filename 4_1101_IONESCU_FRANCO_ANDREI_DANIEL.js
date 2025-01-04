@@ -1,13 +1,13 @@
 const editBox = document.getElementById('edit-box');
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
-const histogramCanvas = document.getElementById('histogram');
-const histogramContext = histogramCanvas.getContext('2d');
-let imaginePrezenta;
+const canvasHistograma = document.getElementById('histograma');
+const contextHistograma = canvasHistograma.getContext('2d');
+let imaginePrezenta = false;
 let imagine = new Image();
 let imagineInitiala = new Image();
-let seSelecteaza;
-let isAreaSelected;
+let seSelecteaza = false; 
+let existaZonaSelectata = false;
 let startX, startY, endX, endY;
 let scala = 1;
 let adaugareText = false;
@@ -69,17 +69,17 @@ function gestioneazaImagine(e) {
 
 document.getElementById('select-button').addEventListener('click', () => {
     if (imaginePrezenta) {
-        if (isAreaSelected) {
+        if (existaZonaSelectata) {
             context.clearRect(0, 0, canvas.width, canvas.height);
             context.drawImage(imagine, 0, 0, canvas.width, canvas.height);
             startX = startY = endX = endY = 0;
-            isAreaSelected = false;
+            existaZonaSelectata = false;
         }
             canvas.addEventListener('mousedown', startSelection);
             canvas.addEventListener('mousemove', updateSelection);
             canvas.addEventListener('mouseup', finishSelection);
     } else {
-        alert("Nicio imagine nu este încărcată pentru a face selecția.");
+        alert("Nicio imagine nu este incarcata pentru a face selectia.");
     }
 });
 
@@ -108,7 +108,7 @@ function finishSelection() {
     canvas.removeEventListener('mouseup', finishSelection);
 
     clearHistogram();
-    isAreaSelected = true;
+    existaZonaSelectata = true;
 }
 
 function drawSelection() {
@@ -139,14 +139,14 @@ function modificaHistograma() {
             blue[b]++;
         }
 
-        histogramContext.clearRect(0, 0, histogramCanvas.width, histogramCanvas.height);
+        contextHistograma.clearRect(0, 0, canvasHistograma.width, canvasHistograma.height);
         
-        const barWidth = histogramCanvas.width / 256;
+        const barWidth = canvasHistograma.width / 256;
 
         function drawHistogram(colorArray, color) {
-            histogramContext.fillStyle = color;
+            contextHistograma.fillStyle = color;
             for (let i = 0; i < 256; i++) {
-                histogramContext.fillRect(i * barWidth, histogramCanvas.height - colorArray[i], barWidth, colorArray[i]);
+                contextHistograma.fillRect(i * barWidth, canvasHistograma.height - colorArray[i], barWidth, colorArray[i]);
             }
         }
 
@@ -157,8 +157,34 @@ function modificaHistograma() {
 }
 
 function clearHistogram() {
-    histogramContext.clearRect(0, 0, histogramCanvas.width, histogramCanvas.height);
+    contextHistograma.clearRect(0, 0, canvasHistograma.width, canvasHistograma.height);
 }
+
+document.getElementById('resize-button').addEventListener('click', () => {
+    if (!imaginePrezenta) {
+        alert('Nicio imagine nu este incarcata pentru redimensionare.');
+        return;
+    }
+
+    const latimeNoua = parseFloat(document.getElementById('latime-noua').value);
+    const inaltimeNoua = parseFloat(document.getElementById('inaltime-noua').value);
+
+    if (!latimeNoua && !inaltimeNoua) {
+        alert('Introduceți cel putin o valoare pentru latime sau inaltime.');
+        return;
+    }
+
+    if (latimeNoua && !inaltimeNoua) {
+        scala = latimeNoua / imagine.width; 
+    } else if (!latimeNoua && inaltimeNoua) {
+        scala = inaltimeNoua / imagine.height; 
+    } else {
+        const scalaLatime = latimeNoua / imagine.width;
+        const scalaInaltime = inaltimeNoua / imagine.height;
+        scala = Math.min(scalaLatime, scalaInaltime);
+    }
+    updateImageScale();
+});
 
 document.getElementById('zoom-in').addEventListener('click', () => {
     if (!imaginePrezenta) {
@@ -190,8 +216,8 @@ function updateImageScale() {
 document.getElementById('crop-button').addEventListener('click', cropSelection);
 
 function cropSelection() {
-    if (!isAreaSelected) {
-        alert("Nu este selectată nicio zonă pentru decupare.");
+    if (!existaZonaSelectata) {
+        alert("Nu este selectata nicio zona pentru decupare.");
         return;
     }
 
@@ -199,11 +225,6 @@ function cropSelection() {
     const cropHeight = endY - startY - 4;
     startX += 2;
     startY += 2;
-
-    if (cropWidth <= 0 || cropHeight <= 0) {
-        alert("Dimensiunile selecției sunt invalide.");
-        return;
-    }
 
     const imageData = context.getImageData(startX, startY, cropWidth, cropHeight);
 
@@ -215,15 +236,15 @@ function cropSelection() {
 
     imagine.src = canvas.toDataURL();
 
-    isAreaSelected = false;
+    existaZonaSelectata = false;
     startX = startY = endX = endY = 0;
 }
 
 document.getElementById('buton-delete').addEventListener('click', stergereImagine);
 
 function stergereImagine() {
-    if (!isAreaSelected) {
-        alert("Nu este selectată nicio zonă pentru stergere.");
+    if (!existaZonaSelectata) {
+        alert("Nu este selectata nicio zona pentru stergere.");
         return;
     }
 
@@ -239,8 +260,7 @@ function stergereImagine() {
 
     imagine.src = canvas.toDataURL();
 
-    isAreaSelected = false;
-    drawSelection();
+    existaZonaSelectata = false;
 }
 
 document.getElementById('buton-alb-negru').addEventListener('click', filtruAlbNegru);
@@ -253,14 +273,14 @@ function filtruAlbNegru() {
 
     let x, y, width, height;
 
-    if (isAreaSelected) {
+    if (existaZonaSelectata) {
         x = startX;
         y = startY;
         width = endX - startX;
         height = endY - startY;
 
         if (width <= 0 || height <= 0) {
-            alert("Dimensiunile selecției sunt invalide.");
+            alert("Dimensiunile selectiei sunt invalide.");
             return;
         }
     } else {
@@ -287,8 +307,8 @@ function filtruAlbNegru() {
     context.putImageData(imageData, x, y);
     imagine.src = canvas.toDataURL();
 
-    if (isAreaSelected) {
-        isAreaSelected = false;
+    if (existaZonaSelectata) {
+        existaZonaSelectata = false;
         startX = startY = endX = endY = 0;
     }
 }
@@ -304,14 +324,14 @@ function filtruThreshold() {
     let x, y, width, height;
     const threshold = 128; 
 
-    if (isAreaSelected) {
+    if (existaZonaSelectata) {
         x = startX;
         y = startY;
         width = endX - startX;
         height = endY - startY;
 
         if (width <= 0 || height <= 0) {
-            alert("Dimensiunile selecției sunt invalide.");
+            alert("Dimensiunile selectiei sunt invalide.");
             return;
         }
     } else {
@@ -338,8 +358,8 @@ function filtruThreshold() {
     context.putImageData(imageData, x, y);
     imagine.src = canvas.toDataURL();
 
-    if (isAreaSelected) {
-        isAreaSelected = false;
+    if (existaZonaSelectata) {
+        existaZonaSelectata = false;
         startX = startY = endX = endY = 0;
     }
 }
@@ -354,14 +374,14 @@ function filtruInversareCulori() {
 
     let x, y, width, height;
 
-    if (isAreaSelected) {
+    if (existaZonaSelectata) {
         x = startX;
         y = startY;
         width = endX - startX;
         height = endY - startY;
 
         if (width <= 0 || height <= 0) {
-            alert("Dimensiunile selecției sunt invalide.");
+            alert("Dimensiunile selectiei sunt invalide.");
             return;
         }
     } else {
@@ -384,8 +404,8 @@ function filtruInversareCulori() {
     context.putImageData(imageData, x, y);
     imagine.src = canvas.toDataURL(); 
 
-    if (isAreaSelected) {
-        isAreaSelected = false;
+    if (existaZonaSelectata) {
+        existaZonaSelectata = false;
         startX = startY = endX = endY = 0;
     }
 }
@@ -400,14 +420,14 @@ function filtruSepia() {
 
     let x, y, width, height;
 
-    if (isAreaSelected) {
+    if (existaZonaSelectata) {
         x = startX;
         y = startY;
         width = endX - startX;
         height = endY - startY;
 
         if (width <= 0 || height <= 0) {
-            alert("Dimensiunile selecției sunt invalide.");
+            alert("Dimensiunile selectiei sunt invalide.");
             return;
         }
     } else {
@@ -434,8 +454,8 @@ function filtruSepia() {
     context.putImageData(imageData, x, y);
     imagine.src = canvas.toDataURL(); 
 
-    if (isAreaSelected) {
-        isAreaSelected = false;
+    if (existaZonaSelectata) {
+        existaZonaSelectata = false;
         startX = startY = endX = endY = 0;
     }
 }
@@ -450,14 +470,14 @@ function filtruPixelat() {
 
     let x, y, width, height, dimensiunePixel = 10;
 
-    if (isAreaSelected) {
+    if (existaZonaSelectata) {
         x = startX;
         y = startY;
         width = endX - startX;
         height = endY - startY;
 
         if (width <= 0 || height <= 0) {
-            alert("Dimensiunile selecției sunt invalide.");
+            alert("Dimensiunile selectiei sunt invalide.");
             return;
         }
     } else {
@@ -492,8 +512,8 @@ function filtruPixelat() {
     context.putImageData(imageData, x, y);
     imagine.src = canvas.toDataURL();
 
-    if (isAreaSelected) {
-        isAreaSelected = false;
+    if (existaZonaSelectata) {
+        existaZonaSelectata = false;
         startX = startY = endX = endY = 0;
     }
 }
@@ -553,6 +573,8 @@ function resetImage() {
     canvas.height = imagineInitiala.height;
     imagine.src = imagineInitiala.src; 
     scala = 1; 
+    startX = startY = endX = endY = 0;
+    existaZonaSelectata = false;
     context.drawImage(imagine, 0, 0); 
 }
 
@@ -564,16 +586,16 @@ function saveImage() {
         return;
     }
 
-    const tempCanvas = document.createElement('canvas');
-        const tempContext = tempCanvas.getContext('2d');
-        tempCanvas.width = imagine.width;
-        tempCanvas.height = imagine.height;
-        tempContext.drawImage(imagine, 0, 0, imagine.width, imagine.height);
+    const canvasTemporar = document.createElement('canvas');
+    const contextTemporar = canvasTemporar.getContext('2d');
+    canvasTemporar.width = imagine.width;
+    canvasTemporar.height = imagine.height;
+    contextTemporar.drawImage(imagine, 0, 0, imagine.width, imagine.height);
         
-        tempCanvas.toBlob(blob => {
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = '';
-            link.click();
-        }, 'image/png'); 
+    canvasTemporar.toBlob(blob => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = '';
+        link.click();
+    }, 'image/png'); 
 }
