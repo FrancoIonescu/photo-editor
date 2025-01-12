@@ -18,20 +18,7 @@ let adaugareText = false;
 
 function preventDefaults(e) {
     e.preventDefault();
-    e.stopPropagation();
 }
-
-['dragenter', 'dragover'].forEach(eventName => {
-    editBox.addEventListener(eventName, () => {
-        editBox.classList.add('drag-over');
-    });
-});
-
-['dragleave', 'drop'].forEach(eventName => {
-    editBox.addEventListener(eventName, () => {
-        editBox.classList.remove('drag-over');
-    });
-});
 
 editBox.addEventListener('drop', gestioneazaImagine, false);
 
@@ -67,7 +54,7 @@ function gestioneazaImagine(e) {
     }
 }
 
-document.getElementById('select-button').addEventListener('click', () => {
+document.getElementById('buton-select').addEventListener('click', () => {
     if (imaginePrezenta) {
         if (existaZonaSelectata) {
             context.clearRect(0, 0, canvas.width, canvas.height);
@@ -75,15 +62,15 @@ document.getElementById('select-button').addEventListener('click', () => {
             startX = startY = endX = endY = 0;
             existaZonaSelectata = false;
         }
-            canvas.addEventListener('mousedown', startSelection);
-            canvas.addEventListener('mousemove', updateSelection);
-            canvas.addEventListener('mouseup', finishSelection);
+            canvas.addEventListener('mousedown', startSelectie);
+            canvas.addEventListener('mousemove', modificaSelectie);
+            canvas.addEventListener('mouseup', oprireSelectie);
     } else {
         alert("Nicio imagine nu este incarcata pentru a face selectia.");
     }
 });
 
-function startSelection(e) {
+function startSelectie(e) {
     seSelecteaza = true;
     startX = e.offsetX;
     startY = e.offsetY;
@@ -91,34 +78,33 @@ function startSelection(e) {
     endY = startY;
 }
 
-function updateSelection(e) {
+function modificaSelectie(e) {
     if (!seSelecteaza) return;
 
     endX = e.offsetX;
     endY = e.offsetY;
 
-    drawSelection();
+    deseneazaSelectie();
     modificaHistograma();
 }
 
-function finishSelection() {
+function oprireSelectie() {
     seSelecteaza = false;
-    canvas.removeEventListener('mousedown', startSelection);
-    canvas.removeEventListener('mousemove', updateSelection);
-    canvas.removeEventListener('mouseup', finishSelection);
+    canvas.removeEventListener('mousedown', startSelectie);
+    canvas.removeEventListener('mousemove', modificaSelectie);
+    canvas.removeEventListener('mouseup', oprireSelectie);
 
-    clearHistogram();
+    stergeHistograma();
     existaZonaSelectata = true;
 }
 
-function drawSelection() {
+function deseneazaSelectie() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(imagine, 0, 0, canvas.width, canvas.height);
 
     context.strokeStyle = 'red';
     context.lineWidth = 2;
     context.strokeRect(startX, startY, endX - startX, endY - startY);
-    
 }
 
 function modificaHistograma() {
@@ -141,26 +127,26 @@ function modificaHistograma() {
 
         contextHistograma.clearRect(0, 0, canvasHistograma.width, canvasHistograma.height);
         
-        const barWidth = canvasHistograma.width / 256;
+        const latimeBara = canvasHistograma.width / 256;
 
-        function drawHistogram(colorArray, color) {
+        function deseneazaHistograma(colorArray, color) {
             contextHistograma.fillStyle = color;
             for (let i = 0; i < 256; i++) {
-                contextHistograma.fillRect(i * barWidth, canvasHistograma.height - colorArray[i], barWidth, colorArray[i]);
+                contextHistograma.fillRect(i * latimeBara, canvasHistograma.height - colorArray[i], latimeBara, colorArray[i]);
             }
         }
 
-        drawHistogram(red, 'red');
-        drawHistogram(green, 'green');
-        drawHistogram(blue, 'blue');
+        deseneazaHistograma(red, 'red');
+        deseneazaHistograma(green, 'green');
+        deseneazaHistograma(blue, 'blue');
     }    
 }
 
-function clearHistogram() {
+function stergeHistograma() {
     contextHistograma.clearRect(0, 0, canvasHistograma.width, canvasHistograma.height);
 }
 
-document.getElementById('resize-button').addEventListener('click', () => {
+document.getElementById('buton-resize').addEventListener('click', () => {
     if (!imaginePrezenta) {
         alert('Nicio imagine nu este incarcata pentru redimensionare.');
         return;
@@ -168,6 +154,9 @@ document.getElementById('resize-button').addEventListener('click', () => {
 
     const latimeNoua = parseFloat(document.getElementById('latime-noua').value);
     const inaltimeNoua = parseFloat(document.getElementById('inaltime-noua').value);
+
+    document.getElementById('latime-noua').value = "";
+    document.getElementById('inaltime-noua').value = "";
 
     if (!latimeNoua && !inaltimeNoua) {
         alert('Introduceți cel putin o valoare pentru latime sau inaltime.');
@@ -183,7 +172,7 @@ document.getElementById('resize-button').addEventListener('click', () => {
         const scalaInaltime = inaltimeNoua / imagine.height;
         scala = Math.min(scalaLatime, scalaInaltime);
     }
-    updateImageScale();
+    redimensionareImagine();
 });
 
 document.getElementById('zoom-in').addEventListener('click', () => {
@@ -192,7 +181,7 @@ document.getElementById('zoom-in').addEventListener('click', () => {
         return;
     }
     scala += 0.1; 
-    updateImageScale();
+    redimensionareImagine();
 });
 
 document.getElementById('zoom-out').addEventListener('click', () => {
@@ -202,20 +191,20 @@ document.getElementById('zoom-out').addEventListener('click', () => {
     }
     if (scala >= 0.2) {
         scala -= 0.1; 
-        updateImageScale();
+        redimensionareImagine();
     }
 });
 
-function updateImageScale() {
+function redimensionareImagine() {
     context.clearRect(0, 0, canvas.width, canvas.height);
     canvas.width = imagine.width * scala;
     canvas.height = imagine.height * scala;
     context.drawImage(imagine, 0, 0, canvas.width, canvas.height);  
 }
 
-document.getElementById('crop-button').addEventListener('click', cropSelection);
+document.getElementById('buton-crop').addEventListener('click', decupareImagine);
 
-function cropSelection() {
+function decupareImagine() {
     if (!existaZonaSelectata) {
         alert("Nu este selectata nicio zona pentru decupare.");
         return;
@@ -543,13 +532,13 @@ canvas.addEventListener('click', (event) => {
 
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                const textSizeInput = document.getElementById('dimensiune-text');
-                const textColorInput = document.getElementById('culoare-text');
+                const dimensiuneTextInput = document.getElementById('dimensiune-text');
+                const culoareTextInput = document.getElementById('culoare-text');
                 const text = input.value;
-                const fontSize = parseInt(textSizeInput.value, 10);
-                const textColor = textColorInput.value;
-                context.font = `${fontSize}px Arial`;
-                context.fillStyle = textColor; 
+                const dimensiuneFont = parseInt(dimensiuneTextInput.value, 10);
+                const culoareText = culoareTextInput.value;
+                context.font = `${dimensiuneFont}px Arial`;
+                context.fillStyle = culoareText; 
                 context.fillText(text, x, y); 
 
                 document.body.removeChild(input); 
@@ -561,9 +550,9 @@ canvas.addEventListener('click', (event) => {
     }
 });
 
-document.getElementById('reset-button').addEventListener('click', resetImage);
+document.getElementById('buton-reset').addEventListener('click', resetareImagine);
 
-function resetImage() {
+function resetareImagine() {
     if (!imaginePrezenta) {
         alert('Nu exista nicio imagine de resetat.');
         return;
@@ -578,14 +567,14 @@ function resetImage() {
     context.drawImage(imagine, 0, 0); 
 }
 
-document.getElementById('save-button').addEventListener('click', saveImage);
+document.getElementById('buton-save').addEventListener('click', salvareImagine);
 
-function saveImage() {
+function salvareImagine() {
     if (!imaginePrezenta) {
         alert('Nu exista nicio imagine de salvat.');
         return;
     }
-
+ 
     const canvasTemporar = document.createElement('canvas');
     const contextTemporar = canvasTemporar.getContext('2d');
     canvasTemporar.width = imagine.width;
